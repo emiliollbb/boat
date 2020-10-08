@@ -8,7 +8,7 @@
     .word nmi, reset, 0
 .segment "RODATA"
 palette:
-    .byte $17,$21,$2A,$02,  $0F,$31,$31,$31,  $0F,$31,$31,$31,  $0F,$31,$31,$31  ;background palette
+    .byte $0F,$31,$2A,$02,  $0F,$02,$31,$31,  $0F,$31,$31,$31,  $0F,$31,$31,$31  ;background palette
     .byte $0F,$17,$2A,$02,  $0F,$28,$14,$21,  $0F,$39,$3A,$3B,  $0F,$3D,$3E,$3F  ;sprite palette data
 end_palette:
 s_palette = (end_palette - palette)
@@ -22,14 +22,19 @@ end_rosprites:
 s_rosprites = (end_rosprites - rosprites)
 background:
 sky = $FD
+water= $FD
 
     .res $20, sky  ;row 1, all sky
     .res $20, sky  ;row 2, all sky
     .res $20, sky  ;row 3, all sky
     .res $20, sky  ;row 4, all sky
     .res $20, sky  ;row 5, all sky
+    .res $20, sky  ;row 6, all sky
+    .res $20, sky  ;row 7, all sky
+    .res $20, sky  ;row 8, all sky
+    .res $20, sky  ;row 9, all sky
+    .res $20, sky  ;row 10, all sky
     
-
 	; row 11
     .byte sky,sky,sky,sky,sky,sky,sky,sky
     .byte sky,sky,sky,sky,sky,sky,sky,sky
@@ -41,12 +46,38 @@ sky = $FD
     .byte sky,sky,sky,sky,sky,sky,sky,sky
     .byte sky,sky,sky,sky,sky,sky,sky,sky
     .byte sky,sky,sky,sky,sky,sky,sky,sky
+    
+    .res $20, sky  ;row 13, all sky
+    .res $20, sky  ;row 14, all sky
+    .res $20, sky  ;row 15, all sky
+    .res $20, sky  ;row 16, all sky
+    .res $20, sky  ;row 17, all sky
+    .res $20, sky  ;row 18, all sky
+    .res $20, sky  ;row 19, all sky
+    .res $20, sky  ;row 20, all sky
+    .res $20, sky  ;row 21, all sky
+    .res $20, sky  ;row 22, all sky
+    .res $20, sky  ;row 23, all sky
+    .res $20, sky  ;row 24, all sky
+    .res $20, sky  ;row 25, all sky
+    .res $20, sky  ;row 26, all sky
+    .res $20, sky  ;row 27, all sky
+    .res $20, sky  ;row 28, all sky
+    .res $20, sky  ;row 29, all sky
+    .res $20, sky  ;row 30, all sky
         
 
 end_background:
 s_background = (end_background - background)
 attribute:
+    .byte %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000 ; 2 tile rows
     .byte %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000
+    .byte %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000
+    .byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
+    .byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
+    .byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
+    .byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
+    .byte %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101, %01010101
     
 end_attribute:
 s_attribute = (end_attribute - attribute)
@@ -58,6 +89,8 @@ playerpos:
     .res $02, $00
 buttons:
     .res $01, $00
+pointer:
+    .res 2   ; pointer variables are declared in RAM
 
 .segment "CODE"
 
@@ -153,20 +186,35 @@ loadspritesloop:
     sta playerpos
     sta playerpos+1
               
-loadbackground:
-    lda $2002             ; read ppu status to reset the high/low latch
-    lda #$20
-    sta $2006             ; write the high byte of $2000 address
-    lda #$00
-    sta $2006             ; write the low byte of $2000 address
-    ldx #$00              ; start out at 0
-loadbackgroundloop:
-    lda background, x     ; load data from address (background + the value in x)
-    sta $2007             ; write to ppu
-    inx                   ; x = x + 1
-    cpx #s_background              ; compare x to hex $80, decimal 128 - copying 128 bytes
-    bne loadbackgroundloop  ; branch to loadbackgroundloop if compare was not equal to zero
-                        ; if compare was equal to 128, keep going down
+LoadBackground:
+  LDA $2002             ; read PPU status to reset the high/low latch
+  LDA #$20
+  STA $2006             ; write the high byte of $2000 address
+  LDA #$00
+  STA $2006             ; write the low byte of $2000 address
+
+  LDA #<background
+  STA pointer       ; put the low byte of the address of background into pointer
+  LDA #>background
+  STA pointer+1       ; put the high byte of the address into pointer
+  
+  LDX #$00            ; start at pointer + 0
+  LDY #$00
+OutsideLoop:
+  
+InsideLoop:
+    LDA (pointer), y  ; copy one background byte from address in pointer plus Y
+  STA $2007           ; this runs 256 * 4 times
+  
+  INY                 ; inside loop counter
+  CPY #$00
+  BNE InsideLoop      ; run the inside loop 256 times before continuing down
+  
+  INC pointer+1       ; low byte went 0 to 256, so high byte needs to be changed now
+  
+  INX
+  CPX #$04
+  BNE OutsideLoop     ; run the outside loop 256 times before continuing down
               
               
 loadattribute:
