@@ -1,15 +1,15 @@
 ; vim: ft=asm_ca65
 
 .segment "CHARS"
-    .incbin "mario.chr" ; if you have one
+    .incbin "tiles.chr" ; if you have one
 .segment "HEADER"
     .byte "NES",26,2,1 ; 32K PRG, 8K CHR
 .segment "VECTORS"
     .word nmi, reset, 0
 .segment "RODATA"
 palette:
-    .byte $22,$29,$1a,$0f,  $22,$36,$17,$0f,  $22,$30,$21,$0f,  $22,$27,$17,$0f   ;;background palette
-    .byte $22,$1c,$15,$14,  $22,$02,$38,$3c,  $22,$1c,$15,$14,  $22,$02,$38,$3c   ;;sprite palette
+    .byte $17,$21,$2A,$02,  $0F,$31,$31,$31,  $0F,$31,$31,$31,  $0F,$31,$31,$31  ;background palette
+    .byte $0F,$17,$2A,$02,  $0F,$28,$14,$21,  $0F,$39,$3A,$3B,  $0F,$3D,$3E,$3F  ;sprite palette data
 end_palette:
 s_palette = (end_palette - palette)
 rosprites:
@@ -21,27 +21,32 @@ rosprites:
 end_rosprites:
 s_rosprites = (end_rosprites - rosprites)
 background:
-sky = $24
-bricktop = $45
-brickbottom = $47
-qblock = $53
-    .res $20, sky  ;;row 1, all sky
-    .res $20, sky  ;;row 2, all sky
+sky = $FD
 
-    .byte sky,sky,sky,sky,bricktop,bricktop,sky,sky
-    .byte bricktop,bricktop,bricktop,bricktop,bricktop,bricktop,sky,sky  ;;row 3
-    .byte sky,sky,sky,sky,sky,sky,sky,sky
-    .byte sky,sky,sky,sky,qblock,qblock+1,sky,sky  ;;some brick tops
+    .res $20, sky  ;row 1, all sky
+    .res $20, sky  ;row 2, all sky
+    .res $20, sky  ;row 3, all sky
+    .res $20, sky  ;row 4, all sky
+    .res $20, sky  ;row 5, all sky
     
-    .byte sky,sky,sky,sky,brickbottom,brickbottom,sky,sky
-    .byte brickbottom,brickbottom,brickbottom,brickbottom,brickbottom,brickbottom,sky,sky  ;;row 4
+
+	; row 11
     .byte sky,sky,sky,sky,sky,sky,sky,sky
-    .byte sky,sky,sky,sky,qblock+2,qblock+3,sky,sky  ;;brick bottoms
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+    
+    ; row 12
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+    .byte sky,sky,sky,sky,sky,sky,sky,sky
+        
 
 end_background:
 s_background = (end_background - background)
 attribute:
-    .byte %00000000, %00010000, %01010000, %00010000, %00000000, %00000000, %00000000, %00110000
+    .byte %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000, %00000000
     
 end_attribute:
 s_attribute = (end_attribute - attribute)
