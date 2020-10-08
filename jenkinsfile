@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master',
+                url: 'ssh://git@github.com/emiliollbb/boat.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh '''
+			export NES_CHR_ENCODE=/opt/nes-chr-encode
+			make clean all
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+            	sh '''
+			echo 'Deploy...'
+            		scp $WORKSPACE/boat.nes pi@example.com:/home/pi/RetroPie/roms/boat.nes
+            	'''
+            }
+        }
+        
+    }
+}
