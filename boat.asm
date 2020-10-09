@@ -8,16 +8,16 @@
     .word nmi, reset, 0
 .segment "RODATA"
 palette:
-    .byte $0F,$31,$2A,$02,  $0F,$02,$31,$31,  $0F,$31,$31,$31,  $0F,$31,$31,$31  ;background palette
-    .byte $0F,$17,$2A,$02,  $0F,$28,$14,$21,  $0F,$39,$3A,$3B,  $0F,$3D,$3E,$3F  ;sprite palette data
+    .byte $0F,$31,$2A,$03,  $0F,$02,$31,$31,  $0F,$31,$31,$31,  $0F,$31,$31,$31  ;background palette
+    .byte $0F,$2D,$3D,$01,  $0F,$28,$14,$21,  $0F,$39,$3A,$3B,  $0F,$3D,$3E,$3F  ;sprite palette data
 end_palette:
 s_palette = (end_palette - palette)
 rosprites:
-     ;vert tile attr horiz
-    .byte $80, $32, $00, $80   ;sprite 0
-    .byte $80, $33, $00, $88   ;sprite 1
-    .byte $88, $34, $00, $80   ;sprite 2
-    .byte $88, $35, $00, $88   ;sprite 3
+	     ;vert tile attr horiz
+    .byte $80, $00, $00, $80   ;sprite 0
+    .byte $80, $01, $00, $88   ;sprite 1
+    .byte $88, $10, $00, $80   ;sprite 2
+    .byte $88, $11, $00, $88   ;sprite 3
 end_rosprites:
 s_rosprites = (end_rosprites - rosprites)
 background:
