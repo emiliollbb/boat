@@ -16,8 +16,10 @@ rosprites:
 	     ;vert tile attr horiz
     .byte $80, $00, $00, $80   ;sprite 0
     .byte $80, $01, $00, $88   ;sprite 1
-    .byte $88, $10, $00, $80   ;sprite 2
-    .byte $88, $11, $00, $88   ;sprite 3
+    .byte $80, $02, $00, $90   ;sprite 2
+    .byte $88, $10, $00, $80   ;sprite 3
+    .byte $88, $11, $00, $88   ;sprite 4
+    .byte $88, $12, $00, $90   ;sprite 5
 end_rosprites:
 s_rosprites = (end_rosprites - rosprites)
 background:
@@ -271,25 +273,25 @@ nmi:
     inc playerpos
 :
     ; We update the sprite positions here
-    lda playerpos+1 ;vertical first
-    ; Sprites 0 and 1
-    sta sprites
-    sta sprites+4
-    clc
-    ; Sprites 2 and 3 (shifted down)
-    adc #$08
-    sta sprites+8
-    sta sprites+12
+    ;lda playerpos+1 ;vertical first
+    ; Sprites 0,1,2
+    ;sta sprites
+    ;sta sprites+4
+    ;sta sprites+8
+    ;clc
+    ; Sprites 3,4,5
+    ;adc #$08
+    ;sta sprites+12
 
     ; Sprites 0 and 2
-    lda playerpos ;horizontal
-    sta sprites+3
-    sta sprites+11
-    clc
+    ;lda playerpos ;horizontal
+    ;sta sprites+3
+    ;sta sprites+19
+    ;clc
     ; Sprites 1 and 3 (shifted right)
-    adc #$08
-    sta sprites+7
-    sta sprites+15
+    ;adc #$08
+    ;sta sprites+7
+    ;sta sprites+15
 
 
     ;;this is the ppu clean up section, so rendering the next frame starts properly.
