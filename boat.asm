@@ -14,12 +14,12 @@ end_palette:
 s_palette = (end_palette - palette)
 rosprites:
 	     ;vert tile attr horiz
-    .byte $80, $01, $00, $80   ;sprite 0
-    .byte $80, $02, $00, $88   ;sprite 1
-    .byte $80, $03, $00, $90   ;sprite 2
-    .byte $88, $11, $00, $80   ;sprite 3
-    .byte $88, $12, $00, $88   ;sprite 4
-    .byte $88, $13, $00, $90   ;sprite 5
+    .byte $50, $01, $00, $80   ;sprite 0
+    .byte $50, $02, $00, $88   ;sprite 1
+    .byte $50, $03, $00, $90   ;sprite 2
+    .byte $58, $11, $00, $80   ;sprite 3
+    .byte $58, $12, $00, $88   ;sprite 4
+    .byte $58, $13, $00, $90   ;sprite 5
 end_rosprites:
 s_rosprites = (end_rosprites - rosprites)
 background:
