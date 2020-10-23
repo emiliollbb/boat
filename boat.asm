@@ -14,12 +14,12 @@ end_palette:
 s_palette = (end_palette - palette)
 rosprites:
 	     ;vert tile attr horiz
-    .byte $80, $00, $00, $80   ;sprite 0
-    .byte $80, $01, $00, $88   ;sprite 1
-    .byte $80, $02, $00, $90   ;sprite 2
-    .byte $88, $10, $00, $80   ;sprite 3
-    .byte $88, $11, $00, $88   ;sprite 4
-    .byte $88, $12, $00, $90   ;sprite 5
+    .byte $80, $01, $00, $80   ;sprite 0
+    .byte $80, $02, $00, $88   ;sprite 1
+    .byte $80, $03, $00, $90   ;sprite 2
+    .byte $88, $11, $00, $80   ;sprite 3
+    .byte $88, $12, $00, $88   ;sprite 4
+    .byte $88, $13, $00, $90   ;sprite 5
 end_rosprites:
 s_rosprites = (end_rosprites - rosprites)
 background:
@@ -85,7 +85,7 @@ end_attribute:
 s_attribute = (end_attribute - attribute)
 .segment "OAM"
 sprites:
-    .res $10, $00
+    .res s_rosprites
 .segment "ZEROPAGE"
 playerpos:
     .res $02, $00
@@ -174,15 +174,46 @@ loadpalettesloop:
 
 
 
+;loadsprites:
+;    ldx #$00              ; start at 0
+;loadspritesloop:
+;    lda rosprites, x        ; load data from address (rosprites +  x)
+;    sta sprites, x          ; store into ram address (sprites + x)
+;    inx                   ; x = x + 1
+;    cpx #s_rosprites              ; compare x to hex $10, decimal 16
+;    bne loadspritesloop   ; branch to loadspritesloop if compare was not equal to zero
+                        ; if compare was equal to 16, keep going down
+
 loadsprites:
     ldx #$00              ; start at 0
-loadspritesloop:
+@loop:
     lda rosprites, x        ; load data from address (rosprites +  x)
     sta sprites, x          ; store into ram address (sprites + x)
     inx                   ; x = x + 1
     cpx #s_rosprites              ; compare x to hex $10, decimal 16
-    bne loadspritesloop   ; branch to loadspritesloop if compare was not equal to zero
-                        ; if compare was equal to 16, keep going down
+    bne @loop   ; branch to loadspritesloop if compare was not equal to zero
+
+; Load empty sprites
+;	     ;vert tile attr horiz
+;    .byte $80, $00, $00, $80   ;sprite 0
+loademptysprites:
+@loop:
+    lda #$F0        ; load data from address (rosprites +  x)
+    sta sprites, x          ; store into ram address (sprites + x)
+    inx                   ; x = x + 1
+    lda #$00
+    sta sprites, x
+    inx
+    sta sprites, x
+    inx
+    lda #$80
+    sta sprites, x
+    inx
+
+    cpx #$F0              ; compare x to hex $FF, decimal 128
+    bne @loop   ; branch to loadspritesloop if compare was not equal to zero
+; end load empty sprites
+
                         
     lda #$80 ;set up player position
     sta playerpos
@@ -244,7 +275,7 @@ forever:
     jmp forever     ;jump back to forever, infinite loop
   
 nmi:
-    lda #$00
+    lda #<sprites
     sta $2003       ; set the low byte (00) of the ram address
     lda #>sprites
     sta $4014       ; set the high byte (02) of the ram address, start the transfer
@@ -299,6 +330,7 @@ nmi:
     sta $2000
     lda #%00011110   ; enable sprites, enable background, no clipping on left side
     sta $2001
+    
     lda #$00        ;;tell the ppu there is no background scrolling
     sta $2005
     sta $2005
