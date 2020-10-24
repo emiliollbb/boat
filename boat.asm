@@ -88,6 +88,8 @@ sprites:
     .res s_rosprites
 .segment "ZEROPAGE"
 playerpos:
+    .res $01, $00
+subpos:
     .res $02, $00
 buttons:
     .res $01, $00
@@ -182,12 +184,9 @@ loadsprites:
     inx                   ; x = x + 1
     cpx #s_rosprites              ; compare x to hex $10, decimal 16
     bne @loop   ; branch to loadspritesloop if compare was not equal to zero
-
-
                         
     lda #$80 ;set up player position
     sta playerpos
-    sta playerpos+1
               
 LoadBackground:
   LDA $2002             ; read PPU status to reset the high/low latch
@@ -254,16 +253,6 @@ nmi:
     jsr ReadController
 
     lda buttons
-    and #BUTTON_UP
-    beq :+
-    dec playerpos+1
-:
-    lda buttons
-    and #BUTTON_DOWN
-    beq :+
-    inc playerpos+1
-:
-    lda buttons
     and #BUTTON_LEFT
     beq :+
     dec playerpos
@@ -273,6 +262,10 @@ nmi:
     beq :+
     inc playerpos
 :
+
+update_player:
+    lda playerpos
+    sta sprites+3
     ; We update the sprite positions here
     ;lda playerpos+1 ;vertical first
     ; Sprites 0,1,2
