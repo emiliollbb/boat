@@ -174,16 +174,6 @@ loadpalettesloop:
 
 
 
-;loadsprites:
-;    ldx #$00              ; start at 0
-;loadspritesloop:
-;    lda rosprites, x        ; load data from address (rosprites +  x)
-;    sta sprites, x          ; store into ram address (sprites + x)
-;    inx                   ; x = x + 1
-;    cpx #s_rosprites              ; compare x to hex $10, decimal 16
-;    bne loadspritesloop   ; branch to loadspritesloop if compare was not equal to zero
-                        ; if compare was equal to 16, keep going down
-
 loadsprites:
     ldx #$00              ; start at 0
 @loop:
@@ -193,26 +183,6 @@ loadsprites:
     cpx #s_rosprites              ; compare x to hex $10, decimal 16
     bne @loop   ; branch to loadspritesloop if compare was not equal to zero
 
-; Load empty sprites
-;	     ;vert tile attr horiz
-;    .byte $80, $00, $00, $80   ;sprite 0
-loademptysprites:
-@loop:
-    lda #$F0        ; load data from address (rosprites +  x)
-    sta sprites, x          ; store into ram address (sprites + x)
-    inx                   ; x = x + 1
-    lda #$00
-    sta sprites, x
-    inx
-    sta sprites, x
-    inx
-    lda #$80
-    sta sprites, x
-    inx
-
-    cpx #$F0              ; compare x to hex $FF, decimal 128
-    bne @loop   ; branch to loadspritesloop if compare was not equal to zero
-; end load empty sprites
 
                         
     lda #$80 ;set up player position
