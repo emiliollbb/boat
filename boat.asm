@@ -266,6 +266,13 @@ nmi:
 update_player:
     lda playerpos
     sta sprites+3
+    sta sprites+3+4*3
+    adc #$08
+    sta sprites+3+4
+    sta sprites+3+4*4
+    adc #$08
+    sta sprites+3+4*2
+    sta sprites+3+4*5
     ; We update the sprite positions here
     ;lda playerpos+1 ;vertical first
     ; Sprites 0,1,2
