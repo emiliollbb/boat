@@ -239,6 +239,10 @@ loadattributeloop:
 
     lda #%00011110   ; enable sprites, enable background, no clipping on left side
     sta $2001
+    
+    lda #$00        ;;tell the ppu there is no background scrolling
+    sta $2005
+    sta $2005
 
 forever:
     jmp forever     ;jump back to forever, infinite loop
@@ -267,16 +271,20 @@ update_player:
     lda playerpos
     sta sprites+3
     
+    clc
     adc #$08
     sta sprites+3+4
     
+    clc
     adc #$08
     sta sprites+3+4*2
     
     lda playerpos
     sta sprites+3+4*3
+    clc
     adc #$08
     sta sprites+3+4*4
+    clc
     adc #$08
     sta sprites+3+4*5
     
@@ -301,15 +309,5 @@ update_player:
     ;sta sprites+7
     ;sta sprites+15
 
-
-    ;;this is the ppu clean up section, so rendering the next frame starts properly.
-    lda #%10010000   ; enable nmi, sprites from pattern table 0, background from pattern table 1
-    sta $2000
-    lda #%00011110   ; enable sprites, enable background, no clipping on left side
-    sta $2001
-    
-    lda #$00        ;;tell the ppu there is no background scrolling
-    sta $2005
-    sta $2005
   
     rti             ; return from interrupt
